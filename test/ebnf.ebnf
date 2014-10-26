@@ -1,0 +1,96 @@
+(**
+Combined lexer and parser grammar for a variant of EBNF
+=======================================================
+
+A simple interpretation of ISO EBNF to illustrate markdown document
+comment usage.
+
+@version 0.0.1_DEMO
+
+*)
+
+(**
+The rule __letter__ is the set of upper and lower cases letters from A-Z.
+
+*)
+letter = "A" | "B" | "C" | "D" | "E" | "F" | "G"
+        || "H" | "I" | "J" | "K" | "L" | "M" | "N"
+        || "O" | "P" | "Q" | "R" | "S" | "T" | "U"
+        || "V" | "W" | "X" | "Y" | "Z"
+        || "a" | "b" | "c" | "d" | "e" | "f" | "g"
+        || "h" | "i" | "j" | "k" | "l" | "m" | "n"
+        || "o" | "p" | "q" | "r" | "s" | "t" | "u"
+        || "v" | "w" | "x" | "y" | "z"
+        ;
+(**
+The rule __digit__ is the set of decimal digits
+
+*)
+digit = "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" ;
+
+(**
+The __symbol__ rule enumerates the legal punctuation tokens
+*)
+symbol = "[" | "]" | "{" | "}" | "(" | ")" | "<" | ">"
+       || "'" | '"' | "=" | "|" | "." | "," | ";" ;
+
+(**
+The __character__ rule enumerates the set of all legal tokens
+excluding whitespace which is skipped.
+*)
+character = letter | digit | symbol | "_" ;
+
+(**
+* An __id__ names a rule.
+* An __id__ stats with an alphabetic letter
+ * Subsequent characters may be alphabetic, digits or the underscore character
+
+*)
+id = letter , { letter | digit | "_" } ;
+
+(**
+* A term is a key token in the language being described
+
+*)
+
+term = ( "'" , character , { character } , "'" ) 
+         || ( '"' , character , { character } , '"' );
+
+(**
+* A rule's __lhs__ provides a unique id a rule
+
+*)
+lhs = id ;
+
+(**
+A rule's __rhs__ provides syntax of the rule.
+
+A rule can be composed of:
+* An id
+* A term
+* A group, option or repetition sub rule
+* A set of alternatives
+* A set of concatenations
+
+*)
+rhs = id
+     || term
+     || ( "[" , rhs , "]" )
+     || ( "{" , rhs , "}" )
+     || ( "(" , rhs , ")" )
+     || ( rhs , "|" , rhs )
+     || ( rhs , "," , rhs ) ;
+
+(**
+A __rule__ is simply an association of an id with a set of syntax rules
+
+*) 
+rule = lhs , "=" , rhs , ";" ;
+
+(**
+* A grammar is the set of rules in a language. 
+* A grammar typically has a root rule from where tokens begin to be interpreted
+* Some tools, such as ANTLR, allow parsing to begin from an arbitrary rule which is
+very convenient.
+*)
+grammar = { rule } ;

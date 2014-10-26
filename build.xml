@@ -1,0 +1,117 @@
+<!--
+
+Copyright (c) 2014 Darach Ennis < darach at gmail dot com >.
+
+Permission is hereby granted, free of charge, to any person obtaining a
+copy of this software and associated documentation files (the
+"Software"), to deal in the Software without restriction, including
+without limitation the rights to use, copy, modify, merge, publish,
+distribute, sublicense, and/or sell copies of the Software, and to permit
+persons to whom the Software is furnished to do so, subject to the
+following conditions:  
+
+The above copyright notice and this permission notice shall be included
+in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
+NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+-->
+
+<project name='ebnfdoc' default='test' basedir='.'>
+
+    <path id='deps.path'>
+        <fileset dir='lib'>
+            <include name='**/*.jar'/>
+        </fileset>
+    </path>
+
+    <path id='build.path'>
+        <path refid='deps.path'/>
+        <pathelement location='build/classes'/>
+    </path>
+
+    <target name='clean'>
+        <delete dir='build'/>
+        <delete file='test/statements.actual'/>
+    </target>
+
+    <target name='purge' depends='clean'>
+        <delete file='ebnfdoc.jar'/>
+    </target> 
+
+    <target name='init'>
+        <mkdir dir='build'/>
+        <mkdir dir='build/classes'/>
+    </target>
+
+    <target name='gen' depends='init'>
+        <java dir='src' fork='true' classname='org.antlr.v4.Tool' classpathref='deps.path'>
+            <arg value="-atn"/>
+            <arg value="-listener"/>
+            <arg value="-visitor"/>
+            <arg value="-encoding"/>
+            <arg value="UTF-8"/>
+            <arg  value="-o"/>
+            <arg  value="${basedir}/build/gen"/>
+            <arg  value="-package"/>
+            <arg  value="ebnfdoc"/>
+            <arg  value="ebnfdoc/Ebnf.g4"/>
+        </java>
+        <java dir='src' fork='true' classname='org.antlr.v4.Tool' classpathref='deps.path'>
+            <arg value="-atn"/>
+            <arg value="-listener"/>
+            <arg value="-visitor"/>
+            <arg value="-encoding"/>
+            <arg value="UTF-8"/>
+            <arg  value="-o"/>
+            <arg  value="${basedir}/build/gen"/>
+            <arg  value="-package"/>
+            <arg  value="ebnfdoc"/>
+            <arg  value="ebnfdoc/EbnfDoc.g4"/>
+        </java>
+    </target>
+
+    <target name='build' depends='gen'>
+        <javac debug='yes' srcdir='build/gen' destdir='build/classes' classpathref='deps.path'/>
+        <javac debug='yes' srcdir='src' destdir='build/classes' classpathref='build.path'/>
+        <copy todir='build/classes/ebnfdoc' file='src/ebnfdoc/md.stg'/>
+    </target>
+
+    <target name='test.run' depends='build'>
+        <java fork='true' classname='org.antlr.v4.runtime.misc.TestRig' classpathref='build.path'
+            output='test/statements.actual'>
+            <arg  value="ebnfdoc.Ebnf"/>
+            <arg  value="ebnf"/>
+            <arg  value="-tree"/>
+            <arg  value="test/ebnf.ebnf"/>
+        </java>
+        <condition property='test.run.ok'>
+            <filesmatch file1="test/statements.expected" file2="test/statements.actual"/>
+        </condition>
+    </target>
+
+    <target name='test.ran.ok' if='test.run.ok'>
+        <echo message='Tests: OK!'/>
+    </target>
+
+    <target name='test.ran.ko' unless='test.run.ok'>
+        <fail message='Tests: FAILed!'/>
+    </target>
+
+    <target name='test' depends='dist, test.run, test.ran.ok, test.ran.ko'/>
+
+    <target name='dist' depends='build'>
+        <jar basedir='build/classes' destfile='ebnfdoc.jar'>
+            <manifest>
+                <attribute name="Main-Class" value="ebnfdoc.Ebnf"/>
+                <attribute name="Class-Path" value="lib/antlr-4.2-complete.jar"/>
+            </manifest>
+        </jar>
+    </target>
+</project>

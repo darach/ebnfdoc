@@ -1,0 +1,66 @@
+prolog() ::= ""
+doc(doc) ::= "<doc>"
+productions() ::=
+<<## Productions
+
+___
+
+>>
+statementProlog(num,name) ::= <<
+
+> __<num>:__ &nbsp; **<name>** **=** 
+
+> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; >>
+statementEpilog() ::= <<
+
+---
+
+
+>>
+short_alternative() ::= " &nbsp; **|** &nbsp; "
+long_alternative() ::= << 
+
+
+> &nbsp;&nbsp;&nbsp;&nbsp; **|** >>
+concatenative() ::= " &nbsp; **,** &nbsp; "
+braceOpen() ::= " &nbsp; **\\[** &nbsp; "
+braceClose() ::= " &nbsp; **\\]** &nbsp; "
+squiglyOpen() ::= " &nbsp; **\\{** &nbsp; "
+squiglyClose() ::= " &nbsp; **\\}** &nbsp; "
+curlyOpen() ::= " &nbsp; **\\(** &nbsp; "
+curlyClose() ::= " &nbsp; **\\)** &nbsp; "
+questionOpen() ::= " &nbsp; **?** &nbsp; "
+questionClose() ::= " &nbsp; **?** &nbsp; "
+identifier(text) ::= " &nbsp; _<text>_ &nbsp; "
+terminal(text) ::= "&nbsp; <text> &nbsp; "
+semicolon() ::= <<&nbsp; **;** &nbsp; 
+
+>>
+epilog() ::= <<
+
+---
+>>
+
+version(arg1) ::= <<
+
+![Version](http://img.shields.io/badge/version-<arg1>-blue.svg)
+
+>>
+
+std(line) ::= <<
+
+![**Status** Standard](http://img.shields.io/badge/std-<line>-brightgreen.svg)
+
+>>
+
+beta(line) ::= <<
+
+![**Status** Beta](http://img.shields.io/badge/beta-<line>-amber.svg)
+
+>>
+
+exp(line) ::= <<
+
+![**Status** Experimental](http://img.shields.io/badge/experimental-<line>-red.svg)
+
+>>
