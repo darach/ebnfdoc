@@ -11,7 +11,7 @@ $ ant
 Example usage:
 
 ```
-$ java -jar ebnfdoc.jar test/ebnf.ebnf
+$ java -jar ebnfdoc.jar -d docs test/ebnf.ebnf
 ```
 
 Generates by default into ./docs directory ( change with -d cmd line option).
