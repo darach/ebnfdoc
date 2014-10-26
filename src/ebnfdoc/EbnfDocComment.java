@@ -71,7 +71,7 @@ public class EbnfDocComment {
                 if ((tagTpl = stGroup.getInstanceOf(tagName)) != null) {
                     if (tagTpl.getAttributes().containsKey("line")) {
                         final String[] t = Arrays.copyOfRange(tagArgs,1,tagArgs.length);
-                        final String ta = URLEncoder.encode(String.join(" ",t));
+                        final String ta = URLEncoder.encode(join(" ",t));
                         tagTpl.add("line",ta);
                 }
                 for (int i = 1; i < tagArgs.length; i++) {
@@ -112,5 +112,17 @@ public class EbnfDocComment {
     public static String process(final STGroup stGroup, final String docCommentText)
         throws IOException {
         return (new EbnfDocComment(stGroup, docCommentText)).toString();
+    }
+
+    private static String join(String delimiter, String[] sa) {
+        StringBuilder sb = new StringBuilder();
+        if (sa == null) return null;
+        if (sa.length == 0) return null;
+        for(int i = 0; i < sa.length-1; i++) {
+            sb.append(sa[i]);
+            sb.append(delimiter);
+        }
+        sb.append(sa[sa.length-1]);
+        return sb.toString();
     }
 }
